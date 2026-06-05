@@ -1,10 +1,31 @@
 # Mathulate
 
-Mathulate is a disting NT custom C++ plugin generated from the Substrate “Disting NT Math Function Plugin Spec”. It processes two CV inputs as normalized values, runs one of 20 safe math equations, then outputs bounded CV.
+> It’s alive! Well, technically it’s a relocatable ARM object file, but let’s not spoil the moment.
+
+Mathulate is a disting NT custom C++ plugin for the Eurorack experimentalist who has looked at two control voltages and thought, “Yes, but what if they had a brief, ill-advised encounter with trigonometry?”
+
+Feed it two CV signals. Mathulate normalizes them, subjects them to one of 20 equations from the slightly humming laboratory cabinet, applies scale and offset, and then politely clamps the result to the Disting NT-safe range of `-10V` to `+10V`. No NaNs, no infinities, no divide-by-zero goblins. Just modulation with a lab coat, safety goggles, and an improbability budget.
+
+## What it does
+
+Mathulate turns two CV inputs into one mathematically persuaded CV output using:
+
+- arithmetic: add, subtract, multiply, safe divide, modulo
+- periodic functions: sine, cosine, safe tangent
+- shaping: absolute value, square, sigmoid, tanh, exponential, logarithm, soft clip
+- charmingly suspicious behavior: Chebyshev, Lorenz, modulo folding, sinc, Gaussian
+
+Some functions are smooth. Some are spiky. Some may appear to have been invented during a thunderstorm by someone shouting “SCIENCE!” at an oscilloscope. This is intentional.
 
 ## Build and test
 
-This folder expects a disting NT API checkout at `./distingNT_API`, or set `DISTINGNT_API`:
+First, make sure the disting NT API submodule is present:
+
+```sh
+git submodule update --init --recursive
+```
+
+Then summon the machinery:
 
 ```sh
 make unit
@@ -13,19 +34,34 @@ make test DISTINGNT_API=/path/to/distingNT_API
 make verify
 ```
 
-`make unit` runs dependency-free native C++ safety tests for all 20 math equations.
+`make unit` runs dependency-free native C++ safety tests for all 20 equations. These tests are less concerned with whether a function is tasteful and more concerned with whether it remains finite, bounded, and unlikely to melt the tea trolley.
 
 Outputs:
 
 - Hardware: `plugins/mathulate.o`
 - nt_emu desktop: `plugins/mathulate.dylib` / `.so` / `.dll`
 
-Tagged pushes matching `v*` trigger `.github/workflows/release.yaml`, which builds/tests the plugin and publishes `mathulate-plugin.zip` containing `programs/plug-ins/mathulate/mathulate.o`.
+Tagged pushes matching `v*` trigger `.github/workflows/release.yaml`, which builds/tests the plugin and publishes `mathulate-plugin.zip` containing:
+
+```text
+programs/plug-ins/mathulate/mathulate.o
+```
 
 ## Parameters
 
-- `CV A`, `CV B`: CV inputs, normalized internally from ±10V to ±1.
+- `CV A`, `CV B`: the two unsuspecting CV inputs, normalized internally from ±10V to ±1.
 - `CV Out` + mode: destination CV bus and replace/add mode.
-- `Equation`: 20-function math library.
+- `Equation`: selects the experiment currently being performed.
 - `Scale`: output gain, 0–200%.
 - `Offset`: output DC offset, -10V to +10V.
+
+## Safety notes from the lab
+
+Mathulate’s core is tested to ensure:
+
+- all 20 equations produce finite values
+- final output stays within `[-10V, +10V]`
+- safe divide and modulo survive zero and near-zero denominators
+- log, sinc, tangent, and Lorenz do not wander off into numerical hyperspace
+
+Clicks, spikes, repetitions, and goofy behavior are allowed. Crashes and infinities are not. This is, after all, a respectable establishment, even if someone did leave the Lorenz attractor running overnight.
