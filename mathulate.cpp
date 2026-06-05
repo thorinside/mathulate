@@ -1,7 +1,7 @@
 /*
  * Mathulate - disting NT CV math processor
  *
- * Generated from Substrate artifact "Disting NT Math Function Plugin Spec".
+ * Generated from Substrate artifact "disting NT Math Function Plugin Spec".
  * Takes two CV inputs, normalizes them to -1..+1, applies one of twenty
  * safe mathematical functions, then emits bounded -10V..+10V CV.
  */

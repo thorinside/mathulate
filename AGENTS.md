@@ -21,7 +21,7 @@ Follow the skill rules: multiply `numFramesBy4` by `4`, treat bus parameters as 
 - Unit tests: `tests/mathulate_core_test.cpp`
 - Build file: `Makefile`
 - API dependency: git submodule at `distingNT_API`
-- Original design: `SPEC.md`, copied from Substrate artifact `46b3ac7e-f350-44a6-8c6e-fc5af8f71be8` (`Disting NT Math Function Plugin Spec`)
+- Original design: `SPEC.md`, copied from Substrate artifact `46b3ac7e-f350-44a6-8c6e-fc5af8f71be8` (`disting NT Math Function Plugin Spec`)
 - GUID: `NT_MULTICHAR('T', 'h', 'M', 't')`
 - Tag: `kNT_tagUtility`
 - UI version string: injected by `Makefile` as `MATHULATE_VERSION` from `git describe --tags --always --dirty`

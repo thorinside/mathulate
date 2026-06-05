@@ -4,7 +4,7 @@
 
 Mathulate is a disting NT custom C++ plugin for the Eurorack experimentalist who has looked at two control voltages and thought, “Yes, but what if they had a brief, ill-advised encounter with trigonometry?”
 
-Feed it two CV signals. Mathulate normalizes them, subjects them to one of 20 equations from the slightly humming laboratory cabinet, applies scale and offset, and then politely clamps the result to the Disting NT-safe range of `-10V` to `+10V`. No NaNs, no infinities, no divide-by-zero goblins. Just modulation with a lab coat, safety goggles, and an improbability budget.
+Feed it two CV signals. Mathulate normalizes them, subjects them to one of 20 equations from the slightly humming laboratory cabinet, applies scale and offset, and then politely clamps the result to the disting NT-safe range of `-10V` to `+10V`. No NaNs, no infinities, no divide-by-zero goblins. Just modulation with a lab coat, safety goggles, and an improbability budget.
 
 ## What it does
 

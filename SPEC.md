@@ -1,9 +1,9 @@
-# Design Specification: Disting NT Math Function Plugin
+# Design Specification: disting NT Math Function Plugin
 
-Source: Substrate artifact `46b3ac7e-f350-44a6-8c6e-fc5af8f71be8`, “Disting NT Math Function Plugin Spec”.
+Source: Substrate artifact `46b3ac7e-f350-44a6-8c6e-fc5af8f71be8`, “disting NT Math Function Plugin Spec”.
 
 ## Overview
-A versatile CV processor for the Disting NT that takes two normalized CV inputs and applies a selected mathematical equation to produce a single CV output. The goal is to provide a Swiss-Army-knife of mathematical transformations for sound design, ranging from basic arithmetic to chaotic and musically surprising functions.
+A versatile CV processor for the disting NT that takes two normalized CV inputs and applies a selected mathematical equation to produce a single CV output. The goal is to provide a Swiss-Army-knife of mathematical transformations for sound design, ranging from basic arithmetic to chaotic and musically surprising functions.
 
 ## Signal Path
 - **Inputs**:
