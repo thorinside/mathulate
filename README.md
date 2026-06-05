@@ -58,7 +58,7 @@ The version shown on the custom UI is injected at build time from `git describe 
 - `Scale`: output gain, 0–200%.
 - `Offset`: output DC offset, -10V to +10V.
 - `Clock In`: optional clock CV input. Leave at `0` for internal/free-running speed.
-- `Speed`: free-running rate, or clock division/multiplication when clocked (`/16` through `x8`, plus `/24`, `/48`, `/96`).
+- `Speed`: free-running rate, or clock division/multiplication when clocked (`/96` through `x8`).
 - `Phase`: phase offset, 0–100%, shifting both the rendered graph and the modulation phase.
 
 ## Custom UI

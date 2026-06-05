@@ -15,7 +15,7 @@
 
 namespace {
 
-static const int kDefaultSpeed = 4;
+static const int kDefaultSpeed = 7;
 static const float kClockThreshold = 1.0f;
 static const float kFallbackSampleRate = 48000.0f;
 #ifndef MATHULATE_VERSION
@@ -82,6 +82,9 @@ static const char* const equationStrings[] = {
 };
 
 static const char* const speedStrings[] = {
+    "/96",
+    "/48",
+    "/24",
     "/16",
     "/8",
     "/4",
@@ -91,13 +94,13 @@ static const char* const speedStrings[] = {
     "x3",
     "x4",
     "x8",
-    "/24",
-    "/48",
-    "/96",
     NULL,
 };
 
 static const float speedMultipliers[] = {
+    1.0f / 96.0f,
+    1.0f / 48.0f,
+    1.0f / 24.0f,
     1.0f / 16.0f,
     1.0f / 8.0f,
     1.0f / 4.0f,
@@ -107,9 +110,6 @@ static const float speedMultipliers[] = {
     3.0f,
     4.0f,
     8.0f,
-    1.0f / 24.0f,
-    1.0f / 48.0f,
-    1.0f / 96.0f,
 };
 
 static const _NT_parameter parameters[] = {
