@@ -18,6 +18,7 @@ ifeq ($(TARGET),hardware)
                -mfloat-abi=hard \
                -mthumb \
                -Os \
+               -fPIC \
                -ffunction-sections \
                -fdata-sections \
                -fno-rtti \
@@ -75,7 +76,7 @@ $(OUTPUT): check-api $(OBJECTS)
 	@echo "Built: $@"
 	@$(SIZE_CMD)
 
-$(BUILD_DIR)/%.o: %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 $(BUILD_DIR):
