@@ -20,6 +20,8 @@ Outputs:
 - Hardware: `plugins/mathulate.o`
 - nt_emu desktop: `plugins/mathulate.dylib` / `.so` / `.dll`
 
+Tagged pushes matching `v*` trigger `.github/workflows/release.yaml`, which builds/tests the plugin and publishes `mathulate-plugin.zip` containing `programs/plug-ins/mathulate/mathulate.o`.
+
 ## Parameters
 
 - `CV A`, `CV B`: CV inputs, normalized internally from ±10V to ±1.

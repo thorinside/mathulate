@@ -1,0 +1,50 @@
+name: Build and Release Mathulate Plugin
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Install ARM toolchain
+        run: |
+          brew update
+          brew install --cask gcc-arm-embedded
+
+      - name: Verify installation
+        run: arm-none-eabi-g++ --version
+
+      - name: Build and test plugin
+        run: |
+          make clean
+          make verify
+
+      - name: Prepare release archive
+        run: |
+          mkdir -p release/programs/plug-ins/mathulate
+          cp plugins/mathulate.o release/programs/plug-ins/mathulate/
+          cd release
+          zip -r ../mathulate-plugin.zip programs
+          cd ..
+          echo "Archive contents:"
+          unzip -l mathulate-plugin.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: mathulate-plugin.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
