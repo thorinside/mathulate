@@ -113,8 +113,8 @@ static const float speedMultipliers[] = {
 };
 
 static const _NT_parameter parameters[] = {
-    NT_PARAMETER_CV_INPUT("CV A", 0, 1)
-    NT_PARAMETER_CV_INPUT("CV B", 0, 2)
+    NT_PARAMETER_CV_INPUT("CV A", 0, 0)
+    NT_PARAMETER_CV_INPUT("CV B", 0, 0)
     NT_PARAMETER_CV_OUTPUT_WITH_MODE("CV Out", 1, 13)
     { .name = "Equation", .min = 0, .max = mathulate::kNumEquations - 1, .def = mathulate::kEquationAdd, .unit = kNT_unitEnum, .scaling = kNT_scalingNone, .enumStrings = equationStrings },
     { .name = "Scale", .min = 0, .max = 200, .def = 100, .unit = kNT_unitPercent, .scaling = kNT_scalingNone, .enumStrings = NULL },

@@ -51,8 +51,8 @@ The version shown on the custom UI is injected at build time from `git describe 
 
 ## Parameters
 
-- `CV A`: optional phase modulation input, normalized internally from ±10V to ±0.5 phase turns. Set to `None` for unmodulated internal/free-running phase.
-- `CV B`: optional second equation input, normalized internally from ±10V to ±1. Set to `None` for 0V.
+- `CV A`: optional phase modulation input, default `None`, normalized internally from ±10V to ±0.5 phase turns. Set to `None` for unmodulated internal/free-running phase.
+- `CV B`: optional second equation input, default `None`, normalized internally from ±10V to ±1. Set to `None` for 0V.
 - `CV Out` + mode: destination CV bus and replace/add mode.
 - `Equation`: selects the experiment currently being performed.
 - `Scale`: output gain, 0–200%.
