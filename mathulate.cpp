@@ -18,6 +18,7 @@ namespace {
 static const int kDefaultSpeed = 4;
 static const float kClockThreshold = 1.0f;
 static const float kFallbackSampleRate = 48000.0f;
+static const char* const kVersion = "v0.1.0";
 
 struct MathulateDTC {
     mathulate::State core;
@@ -28,6 +29,7 @@ struct MathulateDTC {
     float phase;
     float displayPhase;
     float displayOutput;
+    float displayB;
     float clockPeriodSamples;
     uint32_t samplesSinceClock;
     bool previousClockHigh;
@@ -158,6 +160,7 @@ static void initialiseDtc(MathulateDTC* dtc) {
     dtc->phase = 0.0f;
     dtc->displayPhase = 0.0f;
     dtc->displayOutput = 0.0f;
+    dtc->displayB = 0.0f;
     resetClock(dtc);
 }
 
@@ -272,8 +275,81 @@ static void step(_NT_algorithm* self, float* busFrames, int numFramesBy4) {
         output[i] = replace ? volts : (output[i] + volts);
         dtc->displayPhase = effectivePhase;
         dtc->displayOutput = volts;
+        dtc->displayB = mathulate::normalizeCv(inputB[i]);
         dtc->phase = mathulate::wrapPhase(dtc->phase + 1.0f / period);
     }
+}
+
+static int graphY(float value) {
+    value = clampf(value, -1.0f, 1.0f);
+    const int top = 11;
+    const int bottom = 45;
+    return bottom - (int)((value + 1.0f) * 0.5f * (bottom - top) + 0.5f);
+}
+
+static void drawGraph(MathulateAlgorithm* pThis) {
+    const int left = 2;
+    const int right = 253;
+    const int top = 10;
+    const int bottom = 46;
+    const int midY = (top + bottom) / 2;
+    const int equation = pThis->v[kParamEquation];
+    MathulateDTC* dtc = pThis->dtc;
+
+    NT_drawShapeI(kNT_box, left - 1, top - 1, right + 1, bottom + 1, 5);
+    NT_drawShapeI(kNT_line, left, midY, right, midY, 3);
+    NT_drawShapeI(kNT_line, (left + right) / 2, top, (left + right) / 2, bottom, 3);
+
+    mathulate::State preview;
+    mathulate::resetState(&preview);
+    int prevX = left;
+    int prevY = midY;
+    for (int x = left; x <= right; x += 2) {
+        float t = (x - left) / (float)(right - left);
+        float a = mathulate::phaseToBipolar(t + dtc->phaseOffset);
+        float raw = mathulate::evaluateNormalized(&preview, equation, a, dtc->displayB);
+        int y = graphY(raw);
+        if (x != left)
+            NT_drawShapeI(kNT_line, prevX, prevY, x, y, 11);
+        prevX = x;
+        prevY = y;
+    }
+
+    int dotX = left + (int)(mathulate::wrapPhase(dtc->displayPhase - dtc->phaseOffset) * (right - left) + 0.5f);
+    int dotY = graphY(dtc->displayOutput / mathulate::kMaxVoltage);
+    NT_drawShapeI(kNT_rectangle, dotX - 1, dotY - 1, dotX + 1, dotY + 1, 15);
+}
+
+static bool draw(_NT_algorithm* self) {
+    MathulateAlgorithm* pThis = (MathulateAlgorithm*)self;
+    MathulateDTC* dtc = pThis->dtc;
+
+    NT_drawText(0, 5, "MATHULATE", 15, kNT_textLeft, kNT_textTiny);
+    NT_drawText(44, 5, kVersion, 8, kNT_textLeft, kNT_textTiny);
+    bool clocked = pThis->v[kParamClockIn] > 0;
+    NT_drawText(207, 5, clocked ? "CLK" : "INT", clocked && dtc->clockSeen ? 15 : 8, kNT_textLeft, kNT_textTiny);
+    NT_drawText(229, 5, speedStrings[pThis->v[kParamSpeed]], 15, kNT_textLeft, kNT_textTiny);
+    NT_drawShapeI(kNT_line, 0, 7, 255, 7, 5);
+
+    drawGraph(pThis);
+
+    char buf[16];
+    NT_drawShapeI(kNT_line, 0, 49, 255, 49, 5);
+    NT_drawText(0, 56, equationStrings[pThis->v[kParamEquation]], 15, kNT_textLeft, kNT_textTiny);
+
+    NT_drawText(96, 56, "S", 8, kNT_textLeft, kNT_textTiny);
+    NT_intToString(buf, pThis->v[kParamScale]);
+    NT_drawText(104, 56, buf, 15, kNT_textLeft, kNT_textTiny);
+
+    NT_drawText(136, 56, "O", 8, kNT_textLeft, kNT_textTiny);
+    NT_floatToString(buf, pThis->v[kParamOffset] * 0.001f, 2);
+    NT_drawText(144, 56, buf, 15, kNT_textLeft, kNT_textTiny);
+
+    NT_drawText(196, 56, "P", 8, kNT_textLeft, kNT_textTiny);
+    NT_intToString(buf, pThis->v[kParamPhaseOffset]);
+    NT_drawText(204, 56, buf, 15, kNT_textLeft, kNT_textTiny);
+
+    return true;
 }
 
 static uint32_t hasCustomUi(_NT_algorithm*) {
@@ -334,7 +410,7 @@ static const _NT_factory factory = {
     .construct = construct,
     .parameterChanged = parameterChanged,
     .step = step,
-    .draw = NULL,
+    .draw = draw,
     .midiRealtime = NULL,
     .midiMessage = NULL,
     .tags = kNT_tagUtility,
