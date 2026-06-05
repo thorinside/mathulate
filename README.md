@@ -8,7 +8,7 @@ Feed it two CV signals. Mathulate normalizes them, subjects them to one of 20 eq
 
 ## What it does
 
-Mathulate turns two CV inputs into one mathematically persuaded CV output using:
+Mathulate turns clocked or free-running phase into one mathematically persuaded CV output using:
 
 - arithmetic: add, subtract, multiply, safe divide, modulo
 - periodic functions: sine, cosine, safe tangent
@@ -49,11 +49,30 @@ programs/plug-ins/mathulate/mathulate.o
 
 ## Parameters
 
-- `CV A`, `CV B`: the two unsuspecting CV inputs, normalized internally from ±10V to ±1.
+- `CV A`: phase modulation input, normalized internally from ±10V to ±0.5 phase turns.
+- `CV B`: the second equation input, normalized internally from ±10V to ±1.
 - `CV Out` + mode: destination CV bus and replace/add mode.
 - `Equation`: selects the experiment currently being performed.
 - `Scale`: output gain, 0–200%.
 - `Offset`: output DC offset, -10V to +10V.
+- `Clock In`: optional clock CV input. Leave at `0` for internal/free-running speed.
+- `Speed`: free-running rate, or clock division/multiplication when clocked (`/16` through `x8`).
+- `Phase`: phase offset, 0–100%, shifting both the rendered graph and the modulation phase.
+
+## Custom UI
+
+Mathulate takes over the front-panel controls:
+
+- left encoder: equation
+- right encoder: speed / clock division
+- left pot: scale
+- center pot: offset
+- right pot: phase offset
+- pot buttons: reset their matching pot parameter
+- left encoder button: jump to the next equation category
+- right encoder button: reset phase
+
+The display suppresses the standard parameter line and shows `MATHULATE`, the version number, clock/internal status, a phase-shifted graph of the selected equation, and a dot traveling along the curve. Think of it as an oscilloscope that has read too many popular science magazines.
 
 ## Safety notes from the lab
 

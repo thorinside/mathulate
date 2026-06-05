@@ -36,8 +36,11 @@ Do not reorder released parameters unless the user accepts preset breakage. Curr
 5. `Equation`
 6. `Scale`
 7. `Offset`
+8. `Clock In`
+9. `Speed`
+10. `Phase`
 
-The enum values for `Equation` are also preset-facing; append new equations instead of reordering or renaming existing meanings.
+The enum values for `Equation` and `Speed` are also preset-facing; append new equations/speeds instead of reordering or renaming existing meanings.
 
 ## Version control workflow
 
@@ -71,6 +74,8 @@ Expected outputs:
 - nt_emu desktop library: `plugins/mathulate.dylib` on macOS, `.so` on Linux, `.dll` on Windows
 - Native safety test binary: `build/mathulate_core_test`
 
-`make unit` checks every equation for finite raw values, bounded CV output, divide/modulo zero safety, singularity-prone inputs, and Lorenz long-run stability. Spiky/discontinuous outputs are allowed; NaN/Inf and out-of-range final CV are not.
+`make unit` checks every equation for finite raw values, bounded CV output, divide/modulo zero safety, singularity-prone inputs, phase-driven output safety, and Lorenz long-run stability. Spiky/discontinuous outputs are allowed; NaN/Inf and out-of-range final CV are not.
 
-`make check` reports math-library undefined symbols (`sinf`, `cosf`, `expf`, etc.) for the relocatable/plugin host build; that is expected for this plugin as long as there are no missing project/API symbols.
+Custom UI policy: keep the draw callback returning `true` so the standard parameter line stays hidden. Tiny text is baseline-aligned; a top-row tiny label should use baseline `y=5`. The graph is phase-shifted by the `Phase` parameter itself, not just by moving the dot.
+
+`make check` reports math-library undefined symbols (`sinf`, `cosf`, `expf`, etc.) and host/API symbols used by the custom UI (`NT_drawText`, `NT_drawShapeI`, `NT_setParameterFromUi`, etc.) for the relocatable/plugin host build; that is expected as long as there are no missing project-local symbols.
