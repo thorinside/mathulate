@@ -290,6 +290,12 @@ static int graphY(float value) {
     return bottom - (int)((value + 1.0f) * 0.5f * (bottom - top) + 0.5f);
 }
 
+static float graphOutputValue(float raw, const MathulateDTC* dtc) {
+    float normalizedOutput = clampf(raw, -1.0f, 1.0f) * dtc->outputScale +
+                            dtc->outputOffset / mathulate::kMaxVoltage;
+    return clampf(normalizedOutput, -1.0f, 1.0f);
+}
+
 static void drawGraph(MathulateAlgorithm* pThis) {
     const int left = 2;
     const int right = 253;
@@ -311,7 +317,7 @@ static void drawGraph(MathulateAlgorithm* pThis) {
         float t = (x - left) / (float)(right - left);
         float a = mathulate::phaseToBipolar(t + dtc->phaseOffset);
         float raw = mathulate::evaluateNormalized(&preview, equation, a, dtc->displayB);
-        int y = graphY(raw);
+        int y = graphY(graphOutputValue(raw, dtc));
         if (x != left)
             NT_drawShapeI(kNT_line, prevX, prevY, x, y, 11);
         prevX = x;
