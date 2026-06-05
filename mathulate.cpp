@@ -423,7 +423,7 @@ static void setupUi(_NT_algorithm* self, _NT_float3& pots) {
 }
 
 static const _NT_factory factory = {
-    .guid = NT_MULTICHAR('N', 's', 'M', 't'),
+    .guid = NT_MULTICHAR('T', 'h', 'M', 't'),
     .name = "Mathulate",
     .description = "Two-input CV math modulation source",
     .numSpecifications = 0,
