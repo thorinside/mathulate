@@ -86,3 +86,7 @@ Mathulate’s core is tested to ensure:
 - log, sinc, tangent, and Lorenz do not wander off into numerical hyperspace
 
 Clicks, spikes, repetitions, and goofy behavior are allowed. Crashes and infinities are not. This is, after all, a respectable establishment, even if someone did leave the Lorenz attractor running overnight.
+
+## License
+
+MIT. See `LICENSE`.
