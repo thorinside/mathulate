@@ -39,6 +39,19 @@ Do not reorder released parameters unless the user accepts preset breakage. Curr
 
 The enum values for `Equation` are also preset-facing; append new equations instead of reordering or renaming existing meanings.
 
+## Version control workflow
+
+Make git commits at each coherent stage of work. Do not leave a long chain of unrelated edits uncommitted.
+
+Suggested commit boundaries:
+
+- dependency/build setup changes
+- plugin behavior changes
+- test additions or test-harness refactors
+- documentation/agent-instruction updates
+
+Before committing, run the smallest relevant verification command (`make unit` for math-core/test edits; `make verify` before handing off larger plugin changes). Use concise imperative commit messages, for example `Add math core safety tests`.
+
 ## Build and verification
 
 From repo root:
