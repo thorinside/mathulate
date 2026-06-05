@@ -196,6 +196,33 @@ static void parameterChanged(_NT_algorithm* self, int p) {
         mathulate::resetState(&pThis->dtc->core);
 }
 
+static int16_t clampParamValue(int p, int value) {
+    if (value < parameters[p].min)
+        value = parameters[p].min;
+    if (value > parameters[p].max)
+        value = parameters[p].max;
+    return (int16_t)value;
+}
+
+static int valueFromPot(int p, float pot) {
+    pot = clampf(pot, 0.0f, 1.0f);
+    return parameters[p].min + (int)(pot * (parameters[p].max - parameters[p].min) + 0.5f);
+}
+
+static float potFromValue(int p, int value) {
+    int range = parameters[p].max - parameters[p].min;
+    if (range <= 0)
+        return 0.0f;
+    return clampf((value - parameters[p].min) / (float)range, 0.0f, 1.0f);
+}
+
+static void setParamFromUi(_NT_algorithm* self, int p, int value) {
+    int32_t algIndex = NT_algorithmIndex(self);
+    if (algIndex < 0)
+        return;
+    NT_setParameterFromUi((uint32_t)algIndex, p + NT_parameterOffset(), clampParamValue(p, value));
+}
+
 static void step(_NT_algorithm* self, float* busFrames, int numFramesBy4) {
     MathulateAlgorithm* pThis = (MathulateAlgorithm*)self;
     MathulateDTC* dtc = pThis->dtc;
@@ -249,6 +276,52 @@ static void step(_NT_algorithm* self, float* busFrames, int numFramesBy4) {
     }
 }
 
+static uint32_t hasCustomUi(_NT_algorithm*) {
+    return kNT_potL | kNT_potC | kNT_potR |
+           kNT_potButtonL | kNT_potButtonC | kNT_potButtonR |
+           kNT_encoderL | kNT_encoderR |
+           kNT_encoderButtonL | kNT_encoderButtonR;
+}
+
+static void customUi(_NT_algorithm* self, const _NT_uiData& data) {
+    MathulateAlgorithm* pThis = (MathulateAlgorithm*)self;
+
+    if (data.controls & kNT_potL)
+        setParamFromUi(self, kParamScale, valueFromPot(kParamScale, data.pots[0]));
+    if (data.controls & kNT_potC)
+        setParamFromUi(self, kParamOffset, valueFromPot(kParamOffset, data.pots[1]));
+    if (data.controls & kNT_potR)
+        setParamFromUi(self, kParamPhaseOffset, valueFromPot(kParamPhaseOffset, data.pots[2]));
+
+    if (data.encoders[0] != 0)
+        setParamFromUi(self, kParamEquation, pThis->v[kParamEquation] + data.encoders[0]);
+    if (data.encoders[1] != 0)
+        setParamFromUi(self, kParamSpeed, pThis->v[kParamSpeed] + data.encoders[1]);
+
+    uint16_t pressed = data.controls & ~data.lastButtons;
+    if (pressed & kNT_potButtonL)
+        setParamFromUi(self, kParamScale, parameters[kParamScale].def);
+    if (pressed & kNT_potButtonC)
+        setParamFromUi(self, kParamOffset, parameters[kParamOffset].def);
+    if (pressed & kNT_potButtonR)
+        setParamFromUi(self, kParamPhaseOffset, parameters[kParamPhaseOffset].def);
+    if (pressed & kNT_encoderButtonL) {
+        int nextCategory = ((pThis->v[kParamEquation] / 5) + 1) % 4;
+        setParamFromUi(self, kParamEquation, nextCategory * 5);
+    }
+    if (pressed & kNT_encoderButtonR) {
+        pThis->dtc->phase = 0.0f;
+        pThis->dtc->displayPhase = 0.0f;
+        mathulate::resetState(&pThis->dtc->core);
+    }
+}
+
+static void setupUi(_NT_algorithm* self, _NT_float3& pots) {
+    pots[0] = potFromValue(kParamScale, self->v[kParamScale]);
+    pots[1] = potFromValue(kParamOffset, self->v[kParamOffset]);
+    pots[2] = potFromValue(kParamPhaseOffset, self->v[kParamPhaseOffset]);
+}
+
 static const _NT_factory factory = {
     .guid = NT_MULTICHAR('N', 's', 'M', 't'),
     .name = "Mathulate",
@@ -265,9 +338,9 @@ static const _NT_factory factory = {
     .midiRealtime = NULL,
     .midiMessage = NULL,
     .tags = kNT_tagUtility,
-    .hasCustomUi = NULL,
-    .customUi = NULL,
-    .setupUi = NULL,
+    .hasCustomUi = hasCustomUi,
+    .customUi = customUi,
+    .setupUi = setupUi,
     .serialise = NULL,
     .deserialise = NULL,
     .midiSysEx = NULL,
