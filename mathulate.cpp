@@ -91,6 +91,9 @@ static const char* const speedStrings[] = {
     "x3",
     "x4",
     "x8",
+    "/24",
+    "/48",
+    "/96",
     NULL,
 };
 
@@ -104,6 +107,9 @@ static const float speedMultipliers[] = {
     3.0f,
     4.0f,
     8.0f,
+    1.0f / 24.0f,
+    1.0f / 48.0f,
+    1.0f / 96.0f,
 };
 
 static const _NT_parameter parameters[] = {
