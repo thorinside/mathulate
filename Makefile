@@ -97,6 +97,9 @@ both:
 	@$(MAKE) TARGET=hardware
 	@$(MAKE) TARGET=test
 
+push: hardware
+	ntpush $(OUTPUT_DIR)/$(PLUGIN_NAME).o
+
 unit: $(UNIT_OUTPUT)
 	@$(UNIT_OUTPUT)
 
@@ -119,4 +122,4 @@ size: $(OUTPUT)
 clean:
 	rm -rf $(BUILD_DIR) $(OUTPUT_DIR)
 
-.PHONY: all hardware test both unit verify check size clean check-api
+.PHONY: all hardware test both push unit verify check size clean check-api
