@@ -38,9 +38,13 @@ struct State {
 
 void resetState(State* state);
 float normalizeCv(float volts);
+float wrapPhase(float phase);
+float phaseToBipolar(float phase);
 float evaluateNormalized(State* state, int equation, float a, float b);
 float processSample(State* state, int equation, float cvA, float cvB,
                     float outputScale, float outputOffset);
+float processPhaseSample(State* state, int equation, float phase, float phaseOffset,
+                         float phaseCv, float cvB, float outputScale, float outputOffset);
 
 } // namespace mathulate
 

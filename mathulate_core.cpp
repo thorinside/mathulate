@@ -70,6 +70,17 @@ float normalizeCv(float volts) {
     return clampf(finiteOrZero(volts) / kMaxVoltage, -1.0f, 1.0f);
 }
 
+float wrapPhase(float phase) {
+    float wrapped = fmodf(finiteOrZero(phase), 1.0f);
+    if (wrapped < 0.0f)
+        wrapped += 1.0f;
+    return wrapped;
+}
+
+float phaseToBipolar(float phase) {
+    return wrapPhase(phase) * 2.0f - 1.0f;
+}
+
 float evaluateNormalized(State* state, int equation, float a, float b) {
     a = clampf(finiteOrZero(a), -1.0f, 1.0f);
     b = clampf(finiteOrZero(b), -1.0f, 1.0f);
@@ -127,6 +138,17 @@ float evaluateNormalized(State* state, int equation, float a, float b) {
 float processSample(State* state, int equation, float cvA, float cvB,
                     float outputScale, float outputOffset) {
     float a = normalizeCv(cvA);
+    float b = normalizeCv(cvB);
+    float raw = finiteOrZero(evaluateNormalized(state, equation, a, b));
+    float scale = finiteOrZero(outputScale);
+    float offset = finiteOrZero(outputOffset);
+    return clampf(clampf(raw, -1.0f, 1.0f) * kMaxVoltage * scale + offset,
+                  -kMaxVoltage, kMaxVoltage);
+}
+
+float processPhaseSample(State* state, int equation, float phase, float phaseOffset,
+                         float phaseCv, float cvB, float outputScale, float outputOffset) {
+    float a = phaseToBipolar(wrapPhase(wrapPhase(phase) + wrapPhase(phaseOffset) + normalizeCv(phaseCv) * 0.5f));
     float b = normalizeCv(cvB);
     float raw = finiteOrZero(evaluateNormalized(state, equation, a, b));
     float scale = finiteOrZero(outputScale);

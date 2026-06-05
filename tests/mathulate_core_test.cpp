@@ -162,6 +162,34 @@ void lorenzLongRunStaysFiniteAndBounded() {
     }
 }
 
+void phaseDrivenProcessingStaysFiniteAndBounded() {
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    const float inf = std::numeric_limits<float>::infinity();
+    const float phases[] = { -inf, -1000.0f, -1.0f, -0.25f, -0.0f, 0.0f,
+                             0.25f, 0.5f, 0.9999f, 1.0f, 1000.0f, inf, nan };
+    const float offsets[] = { -2.0f, -0.25f, 0.0f, 0.25f, 1.0f, 2.0f, inf, nan };
+    const float cvValues[] = { -inf, -10.0f, -0.0001f, 0.0f, 0.0001f, 10.0f, inf, nan };
+
+    for (int equation = 0; equation < mathulate::kNumEquations; ++equation) {
+        mathulate::State state;
+        mathulate::resetState(&state);
+        for (size_t pi = 0; pi < sizeof(phases) / sizeof(phases[0]); ++pi) {
+            for (size_t oi = 0; oi < sizeof(offsets) / sizeof(offsets[0]); ++oi) {
+                for (size_t ai = 0; ai < sizeof(cvValues) / sizeof(cvValues[0]); ++ai) {
+                    for (size_t bi = 0; bi < sizeof(cvValues) / sizeof(cvValues[0]); ++bi) {
+                        std::feclearexcept(FE_ALL_EXCEPT);
+                        float out = mathulate::processPhaseSample(&state, equation, phases[pi], offsets[oi],
+                                                                  cvValues[ai], cvValues[bi], 1.0f, 0.0f);
+                        checkNoFloatingExceptions("phase output fenv", equation, cvValues[ai], cvValues[bi]);
+                        checkFiniteBoundedCv("phase output bounded", equation, cvValues[ai], cvValues[bi], out);
+                        checkStateFinite("phase state finite", state);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void invalidEquationIsSafeSilence() {
     mathulate::State state;
     mathulate::resetState(&state);
@@ -183,6 +211,7 @@ int main() {
     zeroAndNearZeroDenominatorsStayFinite();
     singularityProneEquationsStayFinite();
     lorenzLongRunStaysFiniteAndBounded();
+    phaseDrivenProcessingStaysFiniteAndBounded();
     invalidEquationIsSafeSilence();
 
     if (gFailures != 0) {
