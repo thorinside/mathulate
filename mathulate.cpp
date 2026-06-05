@@ -244,13 +244,11 @@ static void step(_NT_algorithm* self, float* busFrames, int numFramesBy4) {
     int inputBIndex = pThis->v[kParamInputB] - 1;
     int outputIndex = pThis->v[kParamOutput] - 1;
     int clockIndex = pThis->v[kParamClockIn] - 1;
-    if (inputAIndex < 0 || inputBIndex < 0 || outputIndex < 0)
-        return;
 
-    const float* inputA = busFrames + inputAIndex * numFrames;
-    const float* inputB = busFrames + inputBIndex * numFrames;
+    const float* inputA = inputAIndex >= 0 ? busFrames + inputAIndex * numFrames : NULL;
+    const float* inputB = inputBIndex >= 0 ? busFrames + inputBIndex * numFrames : NULL;
     const float* clockIn = clockIndex >= 0 ? busFrames + clockIndex * numFrames : NULL;
-    float* output = busFrames + outputIndex * numFrames;
+    float* output = outputIndex >= 0 ? busFrames + outputIndex * numFrames : NULL;
     bool replace = pThis->v[kParamOutputMode];
     int equation = pThis->v[kParamEquation];
     float scale = dtc->outputScale;
@@ -279,12 +277,15 @@ static void step(_NT_algorithm* self, float* busFrames, int numFramesBy4) {
         }
 
         period = clampf(period, 1.0f, sr * 3600.0f);
-        float effectivePhase = mathulate::wrapPhase(dtc->phase + dtc->phaseOffset + mathulate::normalizeCv(inputA[i]) * 0.5f);
-        float volts = mathulate::processPhaseSample(&dtc->core, equation, dtc->phase, dtc->phaseOffset, inputA[i], inputB[i], scale, offset);
-        output[i] = replace ? volts : (output[i] + volts);
+        float cvA = inputA ? inputA[i] : 0.0f;
+        float cvB = inputB ? inputB[i] : 0.0f;
+        float effectivePhase = mathulate::wrapPhase(dtc->phase + dtc->phaseOffset + mathulate::normalizeCv(cvA) * 0.5f);
+        float volts = mathulate::processPhaseSample(&dtc->core, equation, dtc->phase, dtc->phaseOffset, cvA, cvB, scale, offset);
+        if (output)
+            output[i] = replace ? volts : (output[i] + volts);
         dtc->displayPhase = effectivePhase;
         dtc->displayOutput = volts;
-        dtc->displayB = mathulate::normalizeCv(inputB[i]);
+        dtc->displayB = mathulate::normalizeCv(cvB);
         dtc->phase = mathulate::wrapPhase(dtc->phase + 1.0f / period);
     }
 }
