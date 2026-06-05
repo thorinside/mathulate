@@ -18,7 +18,10 @@ namespace {
 static const int kDefaultSpeed = 4;
 static const float kClockThreshold = 1.0f;
 static const float kFallbackSampleRate = 48000.0f;
-static const char* const kVersion = "v0.1.0";
+#ifndef MATHULATE_VERSION
+#define MATHULATE_VERSION "v0.1.0-dev"
+#endif
+static const char* const kVersion = MATHULATE_VERSION;
 
 struct MathulateDTC {
     mathulate::State core;

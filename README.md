@@ -47,6 +47,8 @@ Tagged pushes matching `v*` trigger `.github/workflows/release.yaml`, which buil
 programs/plug-ins/mathulate/mathulate.o
 ```
 
+The version shown on the custom UI is injected at build time from `git describe --tags --always --dirty` via the Makefile. Tagged release builds therefore display the release tag.
+
 ## Parameters
 
 - `CV A`: phase modulation input, normalized internally from ±10V to ±0.5 phase turns.

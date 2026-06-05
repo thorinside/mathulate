@@ -24,6 +24,7 @@ Follow the skill rules: multiply `numFramesBy4` by `4`, treat bus parameters as 
 - Original design: `SPEC.md`, copied from Substrate artifact `46b3ac7e-f350-44a6-8c6e-fc5af8f71be8` (`Disting NT Math Function Plugin Spec`)
 - GUID: `NT_MULTICHAR('N', 's', 'M', 't')`
 - Tag: `kNT_tagUtility`
+- UI version string: injected by `Makefile` as `MATHULATE_VERSION` from `git describe --tags --always --dirty`
 
 ## Compatibility invariants
 
@@ -76,6 +77,6 @@ Expected outputs:
 
 `make unit` checks every equation for finite raw values, bounded CV output, divide/modulo zero safety, singularity-prone inputs, phase-driven output safety, and Lorenz long-run stability. Spiky/discontinuous outputs are allowed; NaN/Inf and out-of-range final CV are not.
 
-Custom UI policy: keep the draw callback returning `true` so the standard parameter line stays hidden. Tiny text is baseline-aligned; a top-row tiny label should use baseline `y=5`. The graph is phase-shifted by the `Phase` parameter itself, not just by moving the dot.
+Custom UI policy: keep the draw callback returning `true` so the standard parameter line stays hidden. Tiny text is baseline-aligned; a top-row tiny label should use baseline `y=5`. The graph is phase-shifted by the `Phase` parameter itself, not just by moving the dot. Do not hardcode release versions in `mathulate.cpp`; use the `MATHULATE_VERSION` define supplied by the Makefile.
 
 `make check` reports math-library undefined symbols (`sinf`, `cosf`, `expf`, etc.) and host/API symbols used by the custom UI (`NT_drawText`, `NT_drawShapeI`, `NT_setParameterFromUi`, etc.) for the relocatable/plugin host build; that is expected as long as there are no missing project-local symbols.

@@ -1,6 +1,8 @@
 PLUGIN_NAME = mathulate
 SOURCES = mathulate.cpp mathulate_core.cpp
 DISTINGNT_API ?= ./distingNT_API
+VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo "v0.1.0-dev")
+VERSION_DEFINE = -DMATHULATE_VERSION=\"$(VERSION)\"
 
 UNAME_S := $(shell uname -s)
 TARGET ?= hardware
@@ -22,7 +24,8 @@ ifeq ($(TARGET),hardware)
                -fno-exceptions \
                -fno-unwind-tables \
                -fno-asynchronous-unwind-tables \
-               -Wall
+               -Wall \
+               $(VERSION_DEFINE)
     LDFLAGS = -Wl,--relocatable -nostdlib
     OUTPUT_DIR = plugins
     BUILD_DIR = build
@@ -33,21 +36,21 @@ ifeq ($(TARGET),hardware)
 else ifeq ($(TARGET),test)
     ifeq ($(UNAME_S),Darwin)
         CXX = clang++
-        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions
+        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions $(VERSION_DEFINE)
         LDFLAGS = -dynamiclib -undefined dynamic_lookup
         EXT = dylib
     endif
 
     ifeq ($(UNAME_S),Linux)
         CXX = g++
-        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions
+        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions $(VERSION_DEFINE)
         LDFLAGS = -shared
         EXT = so
     endif
 
     ifeq ($(OS),Windows_NT)
         CXX = g++
-        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions
+        CXXFLAGS = -std=c++11 -fPIC -Os -Wall -fno-rtti -fno-exceptions $(VERSION_DEFINE)
         LDFLAGS = -shared
         EXT = dll
     endif
